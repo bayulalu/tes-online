@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Tes Online</title>
+</head>
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="css/bootstrap-datepicker3.min.css">
+<link rel="stylesheet" href="css/style.css">
+<body>
+    <div class="container wrap">
+
+                    <div class="form-group row">
+                        <label  class="col-sm-2 col-form-label">Nama Pelangan</label>
+                        <div class="form-group col-sm-4">
+                            <input type="text" class="form-control" id="nama" >
+                    </div>
+                
+            </div>
+            
+                    <div class="form-group row">
+                        <label  class="col-sm-2 col-form-label">Item yg di Jual</label>
+                        <div class="form-group col-sm-2">
+                          <div class="input-group date" data-provide="datepicker">
+                            <input type="text" class="form-control" data-date-format="dd/mm/yyyy" id="tanggal">
+                            
+                            <div class="input-group-addon">
+                              <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- tes -->
+                    <label  class=" col-form-label">Jam</label>
+                    <div class="form-group col-sm-1">
+                      <input type="text" class="form-control" id="jam" disabled value="">
+                    </div>
+                <!-- </div> -->
+                </div>
+
+        <!-- <div class="row"> -->
+                <div class="form-group row">
+                  <label  class="col-sm-2 col-form-label">Item yg di Jual</label>
+            <div class="col-sm-10">
+                    <table class="table table-bordered" id="tabel">
+                            <thead>
+                              <tr>
+                                <th scope="col">Item</th>
+                                <th scope="col">Qty</th>
+                                <th scope="col">Harga Satuan</th>
+                                <th scope="col">Sub Total</th>
+                                <th></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr class="isi">
+                                <td> <input type="text" value="" id="item" > </td>
+                                <td> <input type="number" value="" id="qty"></td>
+                                <td> <input type="number" value="" id="harga"> </td>
+                                <td> <input type="number" disabled value="" id="subTotal"  value=""> </td>
+
+                                <td> <button id="hapus"><i class="fa fa-trash" aria-hidden="true"></i></button> </td>
+                              </tr>
+                              
+                            </tbody>
+                          </table>
+                          <div id="tambah"> + Tambah Item Lain</div>
+            </div>
+                </div>
+        <!-- </div> -->
+
+           
+    <!-- </div> -->
+    <div class="row">
+      <div class="col-md-4 offset-md-8">
+          <div class="form-group row">
+              <label  class="col-sm-4 col-form-label ">Total</label>
+              <div class="form-group col-sm-8">
+                  <input type="text" disabled id="total" value="" class="form-control" >
+          </div>
+      </div>
+      </div>
+      <div class="col-md-4 offset-md-8">
+          <div class="form-group row">
+              <label  class="col-sm-4 col-form-label ">Bayar Tunai</label>
+              <div class="form-group col-sm-8">
+                  <input type="text" class="form-control" id="tunai" value="" >
+          </div>
+      </div>
+      </div>
+      <div class="col-md-4 offset-md-8">
+          <div class="form-group row">
+              <label  class="col-sm-4 col-form-label ">Kembali</label>
+              <div class="form-group col-sm-8">
+                  <input type="text" class="form-control" id="kembalian" value="" disabled>
+          </div>
+      </div>
+     
+
+      <div class="footer">
+        <button class="btn btn-default" type="submit">Batal</button>
+        <button class="btn btn-primary kelik"  >Simpan</button>
+      </div>
+    </div>
+        <!-- </form> -->
+    </div>
+    
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="js/bootstrap-datepicker.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+   <script>
+
+$(document).ready(function() {
+  
+    var waktu = new Date();
+    var jam = waktu.getHours() + ':' + waktu.getMinutes()
+    $('#jam').val(jam );
+ 
+
+    var item = $('#item');
+    
+    var nama = $('#nama');
+    var qty = $('#qty');
+    var harga = $('#harga');
+    var jumlah = 0;
+    var tgl = $('#tanggal');
+    var subTotal = $('#subTotal');
+    var tunai = $('#tunai');
+  $('#qty, #harga').change(() => {
+      
+      jumlah = qty.val() * harga.val(); 
+     subTotal.val(jumlah)
+      $('#total').val(jumlah)
+  })
+  
+$('#tunai').change(() => {
+ 
+  $('#kembalian').val(tunai.val() - jumlah);
+})
+
+  $('#tambah').click(() => {
+    console.log("tes");
+    
+    // var nilai = $("#nama_kota").val();
+    // var baris_baru = "<tr><td>"+nilai+"</td></tr>";
+    // $("#tabel").append(baris_baru);
+
+  })
+
+  $('.kelik').click(() => {
+   let data = {
+        'NamaPelanggan' : nama.val(),
+        'Tanggal' : tgl.val(),
+        'Jam': jam, 
+        'Total': subTotal.val(),
+        'BayarTunai': tunai.val(),
+        'Kembalian': $('#kembalian').val(),
+        'DetailPenjualan': [
+          {
+            'Item': item.val(),
+            'Qty' : qty.val(),
+            'Harga Satuan': harga.val(),
+            'Sub Total': subTotal.val()
+          }
+        ]
+   }
+
+   console.log(data);
+   
+    obj = JSON.stringify(data);
+    alert(obj)
+
+  })
+  
+  $('#hapus').click(() => {
+    // console.log('tes');
+    $( ".isi" ).remove();
+
+  })
+
+
+	});
+    </script>
+</body>
+</html>
