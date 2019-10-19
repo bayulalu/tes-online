@@ -55,19 +55,20 @@
                                 <th></th>
                               </tr>
                             </thead>
-                            <tbody>
-                              <tr class="isi">
-                                <td> <input type="text" value="" id="item" > </td>
-                                <td> <input type="number" value="" id="qty"></td>
-                                <td> <input type="number" value="" id="harga"> </td>
-                                <td> <input type="number" disabled value="" id="subTotal"  value=""> </td>
+                            <tbody class="tabel_data" >
+                              <tr  >
+                                <td> <input type="text" value="" name="item" class="item"  > </td>
+                                <td> <input type="number" value="" name="qty" class="qty"></td>
+                                <td> <input type="number" value="" name="harga" class="harga"> </td>
+                                <td> <input type="number" disabled name="subTotal"  class="subTotal"  value=""> </td>
 
-                                <td> <button id="hapus"><i class="fa fa-trash" aria-hidden="true"></i></button> </td>
+                                <td> <button class="hapus"><i class="fa fa-trash" aria-hidden="true"></i></button> </td>
                               </tr>
+
                               
                             </tbody>
                           </table>
-                          <div id="tambah"> + Tambah Item Lain</div>
+                         <a id="tambah"> + Tambah Item Lain</a>
             </div>
                 </div>
         <!-- </div> -->
@@ -87,7 +88,7 @@
           <div class="form-group row">
               <label  class="col-sm-4 col-form-label ">Bayar Tunai</label>
               <div class="form-group col-sm-8">
-                  <input type="text" class="form-control" id="tunai" value="" >
+                  <input type="number" class="form-control" id="tunai" value="" >
           </div>
       </div>
       </div>
@@ -107,7 +108,7 @@
     </div>
         <!-- </form> -->
     </div>
-    
+  
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="js/bootstrap-datepicker.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
@@ -119,70 +120,93 @@ $(document).ready(function() {
     var jam = waktu.getHours() + ':' + waktu.getMinutes()
     $('#jam').val(jam );
  
-
-    var item = $('#item');
-    
     var nama = $('#nama');
-    var qty = $('#qty');
-    var harga = $('#harga');
     var jumlah = 0;
     var tgl = $('#tanggal');
-    var subTotal = $('#subTotal');
+    var subTotal = $('.subTotal');
     var tunai = $('#tunai');
-  $('#qty, #harga').change(() => {
-      
-      jumlah = qty.val() * harga.val(); 
-     subTotal.val(jumlah)
-      $('#total').val(jumlah)
-  })
-  
-$('#tunai').change(() => {
+
+
+$("#tabel").on("input","tbody>tr input", function() {
  
+  $("#tabel tbody>tr").each(function(index) {
+      var $tblrow = $(this);
+      var item2 =$tblrow.find("[name=item]").val() 
+      var qty2 = $tblrow.find("[name=qty]").val();
+      var harga2 = $tblrow.find("[name=harga]").val();
+      var subTotal = parseInt(qty2, 10) * parseFloat(harga2);
+      $tblrow.find("[name=subTotal]").val(subTotal)
+      
+      if (!isNaN(subTotal)) {
+        
+        $tblrow.find('.subTotal').val(subTotal);
+        var grandTotal = 0;
+        $(".subTotal").each(function() {
+          var stval = parseFloat($(this).val());
+          grandTotal += isNaN(stval) ? 0 : stval;
+        });
+        jumlah = grandTotal;
+        $('#total').val(grandTotal);
+      }
+
+    });
+
+})
+
+
+
+$('#tunai').on("input", function(e){ 
   $('#kembalian').val(tunai.val() - jumlah);
 })
 
-  $('#tambah').click(() => {
-    console.log("tes");
-    
-    // var nilai = $("#nama_kota").val();
-    // var baris_baru = "<tr><td>"+nilai+"</td></tr>";
-    // $("#tabel").append(baris_baru);
 
-  })
+$('.kelik').click(() => {
+// console.log();
 
-  $('.kelik').click(() => {
-   let data = {
-        'NamaPelanggan' : nama.val(),
-        'Tanggal' : tgl.val(),
-        'Jam': jam, 
-        'Total': subTotal.val(),
-        'BayarTunai': tunai.val(),
-        'Kembalian': $('#kembalian').val(),
-        'DetailPenjualan': [
-          {
-            'Item': item.val(),
-            'Qty' : qty.val(),
-            'Harga Satuan': harga.val(),
-            'Sub Total': subTotal.val()
-          }
-        ]
-   }
+var big = [{}];
+for (let index = 0; index < $('.item').length; index++) {
+    // console.log();
+    big.push({
+      'Item': $('.item')[index].value,
+      'Qty' :  $('.qty')[index].value,
+      'Harga Satuan':  $('.harga')[index].value,
+      'Sub Total':  $('.subTotal')[index].value
+    })
+}
+  let data = {
+      'NamaPelanggan' : nama.val(),
+      'Tanggal' : tgl.val(),
+      'Jam': jam, 
+      'Total': subTotal.val(),
+      'BayarTunai': tunai.val(),
+      'Kembalian': $('#kembalian').val(),
+      'DetailPenjualan': big
+      
+  }
 
-   console.log(data);
-   
-    obj = JSON.stringify(data);
-    alert(obj)
-
-  })
+  console.log(data);
   
-  $('#hapus').click(() => {
-    // console.log('tes');
-    $( ".isi" ).remove();
+  obj = JSON.stringify(data);
+  alert(obj)
 
-  })
+})
+  
 
+$('.tabel_data').on("click",".hapus", function(e){ 
+    $(this).closest('tr').remove(); 
+})
 
-	});
+$('#tambah').click(() => { 
+    var dt = " <tr><td> <input type='text' name='item' class='item' ></td>" + 
+            "<td> <input type='number' name='qty' class='qty'></td>" + 
+            "<td> <input type='number' name='harga' class='harga' ></td>" +
+            "<td> <input type='number' disabled name='subTotal' class='subTotal'  ></td>" +
+            "<td><button class='hapus'><i class='fa fa-trash' aria-hidden='true'></i></button> </td>"
+            + "</tr>" ;
+    $('#tabel tbody').append(dt);
+})
+
+});
     </script>
 </body>
 </html>
